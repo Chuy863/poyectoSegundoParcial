@@ -1,5 +1,6 @@
 require('./config/config')
 const express = require('express');
+const mongoose = require ( 'mongoose') ;   
 const  bodyParser  = require ('body-parser');  
 const app = express();
 
@@ -64,7 +65,21 @@ app.delete('/usuario/:id', function(req, res){
    id: id
  });
 });
- //la aplicacion escuha en el puerto 3000
+
+//Esta es la funcion responsable de la conexion de la aplicacion a la base de datos de forma OK
+ mongoose.connect('mongodb://localhost:27017/cafeteria', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
+ },
+  (err, res) => {
+  if (err) throw err;
+  console.log('Base de datos Online');
+
+});
+
+ //la aplicacion escucha en el puerto 3000
 app.listen(process.env.PORT, () =>{
 console.log('El servidor esta en linea en el puerto 3000');
 });
