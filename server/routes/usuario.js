@@ -1,15 +1,34 @@
 const express = require('express');
+const _ = require('underscore');
 const Usuario = require('../models/usuario');
 const app = express();
 
 //la constante app es constante servidor la que se encarga de procesar todo, y con un . se invocan las funciones
 //request es lo que manda el cliente y respond es lo que le respondemos al cliente
 app.get('/usuario', function (req, res) {
-  //send envia texto en html
-  res.json({
-  ok: 200,
-  mensaje:'Usuario consultado con exito'
+  let desde = req.query.desde || 0;
+  let hasta = req.query.hasta || 5;
+
+  Usuario.find({estado: true})
+  .skip(Number(desde))
+  .limit(Number(hasta))
+  .exec((err, usuarios) => {
+    if(err){
+      return res.status(400).json({
+        ok: false,
+        msg: 'Ocurrio un error al momento de consultar',
+        err
+      });
+    }
+    res.json({
+      ok: true,
+      msg: 'Lista de usuarios obtenidos con exito',
+      conteo: usuarios.length,
+      usuarios
+    })
+
   });
+
 });
 
 app.post('/usuario', function (req, res) {
@@ -38,17 +57,27 @@ app.post('/usuario', function (req, res) {
 
 });
 
-app.put('/usuario/:id/:nombre', function (req, res) {
-  let id = req.params.id;
-  let nombre = req.params.nombre;
-    
-  res.json({
-    ok:'200',
-    mensaje:'Usuario actualizado con exito',
-    id: id,
-    nombre:nombre
+app.put('/usuario/:id', function (req, res) {
+   let id = req.params.id
+   let body = _.pick(req.body, ['nombre', 'email']);
+
+  Usuario.findByIdAndUpdate(id, body,{new: true, runValidators: true, context: 'query'},
+  (err, usrDB) =>{
+    if(err){
+      return res.status(400).json({
+        ok: false,
+        msg: 'Ocurrio un error al momento de actualizar',
+        err
       });
+    }
+
+    res.json({
+      ok: true,
+      msg: 'Usuario actualizado con exito',
+      usuario:usrDB
+    });
   });
+});
 
 app.delete('/usuario/:id', function(req, res){
   let id = req.params.id;
