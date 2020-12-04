@@ -22,7 +22,7 @@ app.use(require('./routes/login'));
 
 
 //Esta es la funcion responsable de la conexion de la aplicacion a la base de datos de forma OK
- mongoose.connect('mongodb://localhost:27017/cafeteria', {
+ mongoose.connect('mongodb+srv://admin:iyosoyAdmin@cluster0.bzm0o.mongodb.net/cafeteria', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
